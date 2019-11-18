@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from matplotlib.colors import LogNorm
-import directories
 import os
 import glob
 
 def single():
-    directory = '/home/radians/raweldon/compton_coinc/results/plots/' 
+    ''' plot coincidence spectra
+    '''
+    cwd = os.getcwd()
+    directory = cwd + '/plots/' 
     filenames = ('coinc_data_10ns.npy', 'coinc_data_20ns.npy')#, 'coinc_data_50ns.npy', 'coinc_data_100ns.npy') 
-    det_angles = [70, 60, 50, 40, 30, 20, 20, 30, 40, 50, 60, 70] #BL to BR
-    det_no = range(4,16) #corresponds to struck channel no (stil det 0)
 
-    for i,filename in enumerate(filenames):
+    for i, filename in enumerate(filenames):
         print filename
 
         ql_vs_tof = np.load(directory + filename)
@@ -41,5 +42,30 @@ def single():
         
     plt.show()
 
+def with_time():
+    ''' plot edge spectra
+    '''
+    cwd = os.getcwd()
+    directory = cwd + '/plots/' 
+    filename = 'cs_hists_coinc_t1.npy'
+
+    ql_vs_tof = np.load(directory + filename)
+    ql = ql_vs_tof[0]
+
+    indices = np.linspace(0, len(ql), 24)
+    plt.figure()
+    color = cm.viridis(np.linspace(0, 1, len(indices)))
+    for idx, val in enumerate( indices):
+        val = int(val)
+        if idx == 0:
+            ql_short = ql[0:val]
+        else:
+            ql_short = ql[int(indices[idx-1]):val]
+        plt.hist(ql_short, bins=1000, histtype='step', color=color[idx], density=True)
+        plt.title(os.path.basename(filename),fontsize=20)
+        plt.xlim(0, 20000)
+    plt.show()
+
 if __name__ == '__main__':
-    single()
+    #single()
+    with_time()
