@@ -5,7 +5,7 @@ import polimi_parse
 
 cwd = os.getcwd()
 sim_dir = cwd + '/plots/'
-input_file = 'ej309_spec.log'
+input_file = 'cs_spec_polimi.log'
 
 collision = polimi_parse.fromfile(sim_dir + input_file)
 histories = np.unique(collision.history)
@@ -30,5 +30,5 @@ plt.figure()
 plt.plot(sim_bin_centers, sim_hist)
 plt.show()
 
-np.save(sim_dir + 'ej309', sim_data) # save to npy for quick loading
+np.save(sim_dir + 'cs_spec', sim_data) # save to npy for quick loading
 print 'spectra saved to ' + sim_dir + 'ej309'

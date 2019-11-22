@@ -22,19 +22,15 @@ def single():
         print max(ql)
         tof = ql_vs_tof[1]
 
-        '''Plots'''    
-    #    save_dir = '/home/raweldon/tunl/6_2016_experiment/Edep_vs_timing/'+str(angle)+'_deg_plots'
-    #    if not os.path.exists(save_dir):
-    #        os.makedirs(save_dir)        
-        
-        fig = plt.figure()
+        '''Plots'''      
+        plt.figure()
         plt.plot(tof, ql, 'o', alpha=0.5)
         plt.xlabel(r'$\Delta$t (ns)',fontsize=18)
         plt.ylabel('Light Output (MeVee)',fontsize=18)
         plt.title(os.path.basename(filename),fontsize=20)
         #plt.title(filename,fontsize=20)
         #plt.ylim(-0.2,6.0)
-        #fig.savefig(save_dir + '/b_det'+str(det)+'.png', dpi=400)  
+        #plt.savefig(save_dir + '/b_det'+str(det)+'.png', dpi=400)  
 
         plt.figure()
         plt.hist(ql, bins=50)
@@ -47,7 +43,7 @@ def with_time():
     '''
     cwd = os.getcwd()
     directory = cwd + '/plots/' 
-    filename = 'cs_hists_coinc_t1.npy'
+    filename = 'cs_hists_coinc_t2.npy'
 
     ql_vs_tof = np.load(directory + filename)
     ql = ql_vs_tof[0]

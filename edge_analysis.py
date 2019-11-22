@@ -19,11 +19,11 @@ run_database = 'run_database.txt'
 start_time = time.time()
 
     
-def get_meas_data(det_no, save_dir):   
+def get_meas_data(det_no, f_in, save_dir):   
     if det_no == 0:
-        data = np.load(save_dir + 'cs_hists_coinc_t1.npy')[0]
+        data = np.load(save_dir + f_in)[0]
     else:
-        data = np.load(save_dir + 'cs_hists_coinc_t1.npy')[1]
+        data = np.load(save_dir + f_in)[1]
 
     max_data = 80000    
     bin_width = max_data/500.
@@ -149,7 +149,7 @@ def plot_fitted_spectra(shift, spread, lin_scale, args):
         sim_new = shift_and_scale((alpha, beta, gamma, shift, spread, c1, c2, y_scale), sim_data, lin_scale)
        
         # plot measured and fitted simulated data
-        plt.figure(0)
+        plt.figure()
         plt.plot(meas_data_full[0], meas_data_full[1], linestyle='None', marker='x', markersize=5, alpha=0.5, label='measured')
         plt.plot(sim_new[0], sim_new[1], '--', label='fit')
         #plt.plot([spread*x + shift for x in np.linspace(0, max(sim_data[0]), len(meas_data[0]))], 
@@ -163,7 +163,7 @@ def plot_fitted_spectra(shift, spread, lin_scale, args):
         meas_scaled = lin_scaling(shift, spread, meas_data_full)
         sim_with_res = shift_and_scale((alpha, beta, gamma, 0, 1, c1, c2, y_scale), sim_data, lin_scale)
 
-        plt.figure(1)            
+        plt.figure()            
         plt.plot(meas_scaled[0], meas_scaled[1], linestyle='None', marker='x', markersize=5, alpha=0.5, label='measured')
         plt.plot(sim_with_res[0], sim_with_res[1], '--', label='sim with res')
         plt.plot(sim_data[0], sim_data[1], alpha=0.3, label='sim data')      
@@ -233,7 +233,7 @@ def cal_interp(shift_terms, spread_terms, start_file, stop_file, run_names, data
         return interp_shift, interp_spread, groomed_arrays
 
 
-def single(det_no, spread, min_range, lin_scaling):
+def single(fin, det_no, spread, min_range, lin_scaling):
     '''
     Use for individual spectrum fits to get rough idea of initial values and limits for simultaneous fitting
     Note: shift term is only accurate for simulataneous fit, do not use here
@@ -254,7 +254,7 @@ def single(det_no, spread, min_range, lin_scaling):
     sim_data = [sim_data[0][20:], sim_data[1][20:]]
     print 'sim data loaded'
 
-    meas_data_full = get_meas_data(det_no, cwd + '/plots/')
+    meas_data_full = get_meas_data(det_no, fin, cwd + '/plots/')
     print 'meas data loaded'
     meas_data = fit_range(ranges[0], ranges[1], meas_data_full, iso)  #0.35,0.7
     data = [sim_data, meas_data_full, meas_data]            
@@ -266,7 +266,7 @@ def single(det_no, spread, min_range, lin_scaling):
     fit_params.add('beta_1', value=0.04, min=0.0035, max=0.1, vary=True)
     fit_params.add('gamma_1', value=0.0, min=0., max=20, vary=False)
     fit_params.add('shift', value=-1000, vary=True)
-    fit_params.add('spread', value=spread, min=0, vary=True) # 4mev 180000  
+    fit_params.add('spread', value=spread, min=0, max=50000, vary=True) # 4mev 180000  
     if lin_scaling:
         fit_params.add('c1_1', value=0.01, vary=True)
         fit_params.add('c2_1', value=0., vary=False)
@@ -282,10 +282,11 @@ def single(det_no, spread, min_range, lin_scaling):
 if __name__ == '__main__':
     ''' 
     '''
+    fin = 'cs_hists_coinc_t2_2.npy'
     det_no = 0  # 0 stilbene, 1 ej309
     spread = 28000 # initial guess for spread
-    min_range = 7000
-    e0, c = single(det_no, spread, min_range, lin_scaling=False)
+    min_range = 9000
+    e0, c = single(fin, det_no, spread, min_range, lin_scaling=True)
 
     # print 477 keV estimate
     val = c*(0.477 + e0/c)
